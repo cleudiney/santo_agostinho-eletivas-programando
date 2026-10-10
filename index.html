@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aula 01 — Programação por Caixinhas com Arduino</title>
+<style>
+:root{--azul:#073763;--azul2:#0b5cab;--verde:#159947;--laranja:#f28c00;--vermelho:#d71920;--roxo:#6b2bbd;--bg:#f5f8fc;--card:#fff;--texto:#102033}
+*{box-sizing:border-box} body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--texto)}
+header{background:linear-gradient(135deg,#04234a,#075aa7);color:#fff;padding:22px 28px;position:sticky;top:0;z-index:50;box-shadow:0 3px 12px #0003}
+header h1{margin:0;font-size:clamp(24px,4vw,46px)} header p{margin:6px 0 0;font-size:clamp(14px,2vw,20px);opacity:.95}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.toolbar button,.btn{border:0;border-radius:14px;padding:12px 16px;background:#fff;color:#073763;font-weight:700;cursor:pointer;box-shadow:0 2px 7px #0002}.toolbar button:hover,.btn:hover{transform:translateY(-1px)}
+.wrap{max-width:1200px;margin:auto;padding:22px}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 22px}.tab{border:0;padding:10px 12px;border-radius:999px;background:#dcecff;color:#073763;font-weight:700;cursor:pointer}.tab.active{background:#073763;color:white}
+.panel{display:none}.panel.active{display:block}.card{background:white;border-radius:18px;padding:18px;margin:14px 0;box-shadow:0 4px 18px #00224418;border:1px solid #dce7f5}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}.big{font-size:1.15rem;line-height:1.45}.flow{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;margin:18px 0}.box{border:3px solid #0b5cab;background:#eef6ff;border-radius:18px;padding:18px 22px;font-size:1.3rem;font-weight:800;text-align:center;min-width:190px}.box.green{border-color:var(--verde);background:#eafff1}.box.orange{border-color:var(--laranja);background:#fff4df}.box.purple{border-color:var(--roxo);background:#f2eaff}.arrow{font-size:2.5rem;color:#0b5cab;font-weight:900}.memory{max-width:360px;margin:8px auto}.student{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}.student input{width:100%;padding:12px;border:1px solid #bcd2ee;border-radius:12px;font-size:1rem}.guide-img{width:100%;border-radius:18px;border:1px solid #d7e5f4;box-shadow:0 6px 20px #001a3325;background:#fff}.guide-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.code{background:#0f1724;color:#e7f2ff;padding:16px;border-radius:14px;overflow:auto;font-family:Consolas,monospace;font-size:.96rem;line-height:1.35}.pill{display:inline-block;padding:5px 10px;border-radius:999px;font-weight:700;background:#e8f2ff;color:#073763;margin:3px}.warn{background:#fff1f1;border-left:8px solid #d71920}.ok{background:#ecfff3;border-left:8px solid #159947}.ex input,.ex textarea{width:100%;padding:10px;margin:7px 0 12px;border-radius:10px;border:1px solid #bdd1ea}.navbtns{display:flex;gap:10px;justify-content:space-between;position:sticky;bottom:0;background:#f5f8fce8;backdrop-filter:blur(8px);padding:12px 0}.small{font-size:.92rem;color:#40566d} table{width:100%;border-collapse:collapse;background:#fff;border-radius:12px;overflow:hidden} th,td{border:1px solid #d7e5f4;padding:10px;text-align:left} th{background:#073763;color:#fff}
+@media print{header,.tabs,.navbtns,.toolbar,.no-print{display:none!important}.panel{display:block!important;break-after:page}.wrap{max-width:100%;padding:0}.card{box-shadow:none;border:1px solid #bbb}.guide-img{break-inside:avoid} body{background:#fff}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Aula 01 — Programação por Caixinhas com Arduino</h1>
+  <p>Entrada → Processamento → Memória → Saída | LED, sensores, ponte H e motores</p>
+  <div class="toolbar">
+    <button onclick="saveAll()">Salvar andamento</button>
+    <button onclick="clearAll()">Limpar andamento</button>
+    <button onclick="window.print()">Exportar PDF</button>
+  </div>
+</header>
+<div class="wrap">
+  <section class="card">
+    <h2>Identificação</h2>
+    <div class="student">
+      <input id="escola" placeholder="Escola">
+      <input id="turma" placeholder="Eletiva / Turma">
+      <input id="aluno" placeholder="Aluno">
+      <input id="projeto" placeholder="Projeto">
+    </div>
+  </section>
+
+  <div class="tabs" id="tabs"></div>
+
+  <main id="panels">
+    <section class="panel active" data-title="Caixinhas">
+      <div class="card">
+        <h2>1. O desenho das caixinhas</h2>
+        <p class="big">Nesta aula, programar significa organizar caixas. Um sensor entra, o Arduino pensa, a memória ajuda e uma saída age.</p>
+        <div class="flow">
+          <div class="box green">ENTRADA<br><span class="small">sensores, botões</span></div><div class="arrow">→</div><div class="box orange">CAIXA GRANDE<br><span class="small">processamento</span></div><div class="arrow">→</div><div class="box green">SAÍDA<br><span class="small">LEDs, motores</span></div>
+        </div>
+        <div class="flow memory">
+          <div class="box purple">MEMÓRIA<br><span class="small">variáveis, constantes, vetores</span></div>
+          <div class="arrow">↕</div>
+          <div class="box orange">ARDUINO</div>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Molde oficial do código</h2>
+<pre class="code">/*
+ * Escola:
+ * Eletiva de Robótica X:
+ * Aluno:
+ * Projeto:
+ * O que este código faz:
+ */
+
+// Bibliotecas: recursos prontos que posso incluir.
+// Defines: apelidos/substituições antes da compilação.
+// Constantes: valores fixos que não mudam.
+// Variáveis globais: memória usada em várias funções.
+
+void setup() {
+  // prepara a placa uma vez
+}
+
+void loop() {
+  // repete para sempre
+}
+
+// Funções auxiliares: minhas caixinhas de ação.</pre>
+      </div>
+    </section>
+
+    <section class="panel" data-title="Funções">
+      <div class="card">
+        <h2>2. Funções nativas globais</h2>
+        <table><tr><th>Função</th><th>Caixinha</th><th>Exemplo</th><th>O que faz</th></tr>
+          <tr><td><b>pinMode()</b></td><td>Preparar pino</td><td><code>pinMode(13, OUTPUT);</code></td><td>Define se o pino será entrada ou saída. Recebe 2 argumentos: pino e modo.</td></tr>
+          <tr><td><b>digitalWrite()</b></td><td>Escrever saída digital</td><td><code>digitalWrite(13, HIGH);</code></td><td>Coloca HIGH ou LOW no pino.</td></tr>
+          <tr><td><b>digitalRead()</b></td><td>Ler entrada digital</td><td><code>int v = digitalRead(11);</code></td><td>Lê HIGH ou LOW e devolve o valor.</td></tr>
+          <tr><td><b>analogRead()</b></td><td>Ler analógico</td><td><code>int luz = analogRead(A0);</code></td><td>Lê valores analógicos, geralmente de 0 a 1023.</td></tr>
+          <tr><td><b>analogWrite()</b></td><td>Escrever PWM</td><td><code>analogWrite(9, 128);</code></td><td>Controla PWM de 0 a 255.</td></tr>
+          <tr><td><b>delay()</b></td><td>Esperar travando</td><td><code>delay(1000);</code></td><td>Pausa o programa por milissegundos.</td></tr>
+          <tr><td><b>millis()</b></td><td>Tempo sem travar</td><td><code>unsigned long agora = millis();</code></td><td>Retorna o tempo desde que ligou.</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <h2>Como circular uma função</h2>
+        <div class="flow"><div class="box">pinMode</div><div class="box green">(13, OUTPUT)</div><div class="box orange">;</div></div>
+        <p><span class="pill">pinMode</span> é o nome da função. <span class="pill">()</span> é a caixa de argumentos. <span class="pill">13</span> é argumento 1. <span class="pill">OUTPUT</span> é argumento 2. <span class="pill">;</span> finaliza a instrução.</p>
+      </div>
+    </section>
+
+    <section class="panel" data-title="Operadores">
+      <div class="card">
+        <h2>3. Operadores e cuidados rápidos</h2>
+        <div class="grid">
+          <div class="card"><h3>Matemáticos</h3><p><span class="pill">+</span><span class="pill">-</span><span class="pill">*</span><span class="pill">/</span><span class="pill">%</span></p><p><b>%</b> é o resto da divisão.</p></div>
+          <div class="card"><h3>Comparação</h3><p><span class="pill">==</span><span class="pill">!=</span><span class="pill">&gt;</span><span class="pill">&lt;</span><span class="pill">&gt;=</span><span class="pill">&lt;=</span></p><p><b>==</b> compara. <b>=</b> atribui.</p></div>
+          <div class="card"><h3>Lógicos</h3><p><span class="pill">&&</span><span class="pill">||</span><span class="pill">!</span></p><p><b>&&</b> = E, <b>||</b> = OU, <b>!</b> = NÃO.</p></div>
+          <div class="card warn"><h3>Erros comuns</h3><p>Esquecer <b>;</b>, inverter HIGH/LOW no sensor, usar <b>=</b> no lugar de <b>==</b>.</p></div>
+          <div class="card ok"><h3>INPUT_PULLUP</h3><p>Botão com <code>INPUT_PULLUP</code> fica HIGH solto e LOW pressionado. A lógica pode inverter.</p></div>
+          <div class="card warn"><h3>Motores</h3><p>Nunca ligue motor direto no pino do Arduino. Use ponte H e fonte adequada.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" data-title="Lógica">
+      <div class="card"><h2>4. Variáveis, laços, condições e funções</h2>
+        <div class="grid">
+          <div class="card"><h3>Variável</h3><p>Caixa de memória.</p><pre class="code">int contador = 0;
+float temp = 25.5;
+bool ligado = true;</pre></div>
+          <div class="card"><h3>Condicional</h3><pre class="code">if (sensor == HIGH) {
+  frente();
+} else {
+  parar();
+}</pre></div>
+          <div class="card"><h3>Switch case</h3><pre class="code">switch (estado) {
+  case 0: frente(); break;
+  case 1: direita(); break;
+  default: parar();
+}</pre></div>
+          <div class="card"><h3>Laços</h3><pre class="code">for (int i=0; i&lt;5; i++) {}
+while (condicao) {}
+do {} while (condicao);</pre><p><b>when</b> não é comando básico do Arduino C++; usamos <b>if</b>.</p></div>
+          <div class="card"><h3>Função com seta</h3><div class="flow"><div class="box">loop()</div><div class="arrow">→</div><div class="box green">frente()</div></div></div>
+          <div class="card"><h3>Passagem</h3><pre class="code">void mostrar(int n){}       // valor
+void aumentar(int &n){}     // referência
+int lerSensor(int pino){
+  return digitalRead(pino);
+}</pre></div>
+        </div>
+        <p><b>Recursão:</b> função que chama ela mesma. Use com cuidado no Arduino. <b>Overload:</b> funções com o mesmo nome e parâmetros diferentes. <b>Vetor:</b> gaveteiro de caixinhas, como <code>int sensores[5]</code>.</p>
+      </div>
+    </section>
+
+    <section class="panel" data-title="Guias 1-10">
+      <div class="card">
+        <h2>5. Guias ilustrados com imagens reais</h2>
+        <p>As imagens abaixo estão carregadas por arquivos externos. Para funcionar no Netlify, mantenha a pasta <b>img</b> junto com este <b>index.html</b>.</p>
+      </div>
+      <div id="guides"></div>
+    </section>
+
+    <section class="panel" data-title="Códigos">
+      <div class="card"><h2>6. Códigos base para copiar</h2><p>Use estes guias para implementar por funções, variáveis e passagem por valor.</p></div>
+      <div id="codes"></div>
+    </section>
+
+    <section class="panel" data-title="Exercícios">
+      <div class="card ex"><h2>7. Exercícios dinâmicos</h2>
+        <label>1. Em <code>pinMode(13, OUTPUT);</code>, quantos argumentos existem?</label><input data-save="ex1">
+        <label>2. Qual a diferença entre <code>=</code> e <code>==</code>?</label><textarea data-save="ex2"></textarea>
+        <label>3. Por que não posso ligar motor direto no pino do Arduino?</label><textarea data-save="ex3"></textarea>
+        <label>4. Monte o fluxo: sensor → decisão → motor.</label><textarea data-save="ex4"></textarea>
+        <h3>Checklist</h3>
+        <label><input type="checkbox" data-save="c1"> Entendi entrada, processamento, memória e saída.</label><br>
+        <label><input type="checkbox" data-save="c2"> Sei usar pinMode, digitalWrite e digitalRead.</label><br>
+        <label><input type="checkbox" data-save="c3"> Sei que sensores são entradas e motores são saídas.</label><br>
+        <label><input type="checkbox" data-save="c4"> Sei que ponte H controla motores com segurança.</label>
+      </div>
+    </section>
+  </main>
+
+  <div class="navbtns no-print"><button class="btn" onclick="prevTab()">← Voltar</button><button class="btn" onclick="nextTab()">Próximo →</button></div>
+</div>
+<script>
+const titles = [...document.querySelectorAll('.panel')].map(p=>p.dataset.title);
+const tabs = document.getElementById('tabs');
+titles.forEach((t,i)=>{const b=document.createElement('button');b.className='tab'+(i===0?' active':'');b.textContent=(i+1)+'. '+t;b.onclick=()=>showTab(i);tabs.appendChild(b)});
+let current=+localStorage.getItem('abaAtual')||0; showTab(current);
+function showTab(i){const ps=[...document.querySelectorAll('.panel')], bs=[...document.querySelectorAll('.tab')]; current=Math.max(0,Math.min(i,ps.length-1)); ps.forEach((p,k)=>p.classList.toggle('active',k===current)); bs.forEach((b,k)=>b.classList.toggle('active',k===current)); localStorage.setItem('abaAtual',current); window.scrollTo({top:0,behavior:'smooth'});}function nextTab(){showTab(current+1)} function prevTab(){showTab(current-1)}
+const guideNames=['Um LED Frente','Um LED Ré','Dois LEDs Direita','Dois LEDs Esquerda','Controle de Ponte H','Leitura de 1 Sensor de Linha','Leitura de 2 Sensores de Linha','Leitura de 3 Sensores de Linha','Leitura de 5 Sensores com Vetor','Sistema Completo'];
+const guides=document.getElementById('guides'); guideNames.forEach((n,i)=>{guides.insertAdjacentHTML('beforeend',`<article class="card"><div class="guide-head"><h3>Guia ${i+1} — ${n}</h3><a class="btn" href="img/${i+1}.png" target="_blank">Abrir imagem</a></div><img class="guide-img" src="img/${i+1}.png" alt="Guia ${i+1} — ${n}" loading="lazy"></article>`)});
+const codeBlocks=[
+['Guia 1 — LED Frente',`const int LED_FRENTE = 2;\nvoid setup(){ pinMode(LED_FRENTE, OUTPUT); }\nvoid loop(){ digitalWrite(LED_FRENTE, HIGH); }`],
+['Guia 2 — LED Ré',`const int LED_RE = 3;\nvoid setup(){ pinMode(LED_RE, OUTPUT); }\nvoid loop(){ digitalWrite(LED_RE, HIGH); }`],
+['Guia 3 — Dois LEDs Direita',`const int LED_ESQ_FRENTE = 2;\nconst int LED_DIR_PARADO = 4;\nvoid setup(){ pinMode(LED_ESQ_FRENTE,OUTPUT); pinMode(LED_DIR_PARADO,OUTPUT); }\nvoid loop(){ direita(); }\nvoid direita(){ digitalWrite(LED_ESQ_FRENTE,HIGH); digitalWrite(LED_DIR_PARADO,HIGH); }`],
+['Guia 4 — Dois LEDs Esquerda',`const int LED_DIR_FRENTE = 5;\nconst int LED_ESQ_PARADO = 7;\nvoid setup(){ pinMode(LED_DIR_FRENTE,OUTPUT); pinMode(LED_ESQ_PARADO,OUTPUT); }\nvoid loop(){ esquerda(); }\nvoid esquerda(){ digitalWrite(LED_DIR_FRENTE,HIGH); digitalWrite(LED_ESQ_PARADO,HIGH); }`],
+['Guia 5 — Ponte H',`const int M1F=2, M1R=3, M2F=4, M2R=5;\nvoid setup(){ pinMode(M1F,OUTPUT); pinMode(M1R,OUTPUT); pinMode(M2F,OUTPUT); pinMode(M2R,OUTPUT); }\nvoid loop(){ frente(); delay(2000); parar(); delay(1000); re(); delay(2000); parar(); delay(1000); }\nvoid parar(){ digitalWrite(M1F,LOW); digitalWrite(M1R,LOW); digitalWrite(M2F,LOW); digitalWrite(M2R,LOW); }\nvoid frente(){ digitalWrite(M1F,HIGH); digitalWrite(M1R,LOW); digitalWrite(M2F,HIGH); digitalWrite(M2R,LOW); }\nvoid re(){ digitalWrite(M1F,LOW); digitalWrite(M1R,HIGH); digitalWrite(M2F,LOW); digitalWrite(M2R,HIGH); }`],
+['Guia 6 — 1 Sensor',`const int SENSOR = 8;\nvoid setup(){ Serial.begin(9600); pinMode(SENSOR, INPUT); }\nvoid loop(){ int leitura = digitalRead(SENSOR); Serial.println(leitura); delay(200); }`],
+['Guia 7 — 2 Sensores',`const int SENSOR_ESQ=8, SENSOR_DIR=9;\nvoid setup(){ Serial.begin(9600); pinMode(SENSOR_ESQ,INPUT); pinMode(SENSOR_DIR,INPUT); }\nvoid loop(){ int esq=digitalRead(SENSOR_ESQ); int dir=digitalRead(SENSOR_DIR); Serial.print("E: "); Serial.print(esq); Serial.print(" | D: "); Serial.println(dir); delay(200); }`],
+['Guia 8 — 3 Sensores',`const int SENSOR_ESQ=8, SENSOR_CEN=9, SENSOR_DIR=10;\nvoid setup(){ Serial.begin(9600); pinMode(SENSOR_ESQ,INPUT); pinMode(SENSOR_CEN,INPUT); pinMode(SENSOR_DIR,INPUT); }\nvoid loop(){ int esq=digitalRead(SENSOR_ESQ); int cen=digitalRead(SENSOR_CEN); int dir=digitalRead(SENSOR_DIR); Serial.print(esq); Serial.print(" "); Serial.print(cen); Serial.print(" "); Serial.println(dir); delay(200); }`],
+['Guia 9 — 5 Sensores com Vetor',`const int QTD_SENSORES=5;\nint sensores[QTD_SENSORES]={8,9,10,11,12};\nvoid setup(){ Serial.begin(9600); for(int i=0;i<QTD_SENSORES;i++){ pinMode(sensores[i], INPUT); } }\nvoid loop(){ for(int i=0;i<QTD_SENSORES;i++){ int leitura=digitalRead(sensores[i]); Serial.print(leitura); Serial.print(" "); } Serial.println(); delay(200); }`],
+['Guia 10 — Sistema Completo',`const int M1F=2, M1R=3, M2F=4, M2R=5;\nconst int LED_FRENTE=6, LED_RE=7, LED_DIREITA=A0, LED_ESQUERDA=A1;\nconst int SENSOR_ESQ=8, SENSOR_CEN=9, SENSOR_DIR=10;\nvoid setup(){ Serial.begin(9600); pinMode(M1F,OUTPUT); pinMode(M1R,OUTPUT); pinMode(M2F,OUTPUT); pinMode(M2R,OUTPUT); pinMode(LED_FRENTE,OUTPUT); pinMode(LED_RE,OUTPUT); pinMode(LED_DIREITA,OUTPUT); pinMode(LED_ESQUERDA,OUTPUT); pinMode(SENSOR_ESQ,INPUT); pinMode(SENSOR_CEN,INPUT); pinMode(SENSOR_DIR,INPUT); }\nvoid loop(){ int esq=lerSensor(SENSOR_ESQ); int cen=lerSensor(SENSOR_CEN); int dir=lerSensor(SENSOR_DIR); decidirMovimento(esq,cen,dir); delay(50); }\nint lerSensor(int pinoSensor){ return digitalRead(pinoSensor); }\nvoid decidirMovimento(int esq,int cen,int dir){ if(cen==HIGH){ frente(); } else if(esq==HIGH){ esquerda(); } else if(dir==HIGH){ direita(); } else { parar(); } }\nvoid apagarLeds(){ digitalWrite(LED_FRENTE,LOW); digitalWrite(LED_RE,LOW); digitalWrite(LED_DIREITA,LOW); digitalWrite(LED_ESQUERDA,LOW); }\nvoid parar(){ apagarLeds(); digitalWrite(M1F,LOW); digitalWrite(M1R,LOW); digitalWrite(M2F,LOW); digitalWrite(M2R,LOW); }\nvoid frente(){ parar(); digitalWrite(M1F,HIGH); digitalWrite(M2F,HIGH); digitalWrite(LED_FRENTE,HIGH); }\nvoid direita(){ parar(); digitalWrite(M1F,HIGH); digitalWrite(LED_DIREITA,HIGH); }\nvoid esquerda(){ parar(); digitalWrite(M2F,HIGH); digitalWrite(LED_ESQUERDA,HIGH); }`]
+];
+const codes=document.getElementById('codes'); codeBlocks.forEach(([title,code],i)=>{codes.insertAdjacentHTML('beforeend',`<article class="card"><h3>${title}</h3><button class="btn no-print" onclick="copyCode(${i})">Copiar código</button><pre class="code" id="code${i}">${escapeHtml(code)}</pre></article>`)});
+function escapeHtml(s){return s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));} function copyCode(i){navigator.clipboard.writeText(codeBlocks[i][1]); alert('Código copiado!')}
+function saveAll(){['escola','turma','aluno','projeto'].forEach(id=>localStorage.setItem(id,document.getElementById(id).value)); document.querySelectorAll('[data-save]').forEach(el=>localStorage.setItem(el.dataset.save, el.type==='checkbox'?el.checked:el.value)); alert('Andamento salvo neste navegador.');}
+function loadAll(){['escola','turma','aluno','projeto'].forEach(id=>{document.getElementById(id).value=localStorage.getItem(id)||''}); document.querySelectorAll('[data-save]').forEach(el=>{const v=localStorage.getItem(el.dataset.save); if(v!==null){ if(el.type==='checkbox')el.checked=(v==='true'); else el.value=v; }});} loadAll(); document.querySelectorAll('input,textarea').forEach(el=>el.addEventListener('input',saveAll));
+function clearAll(){if(confirm('Limpar andamento salvo?')){localStorage.clear(); location.reload();}}
+</script>
+</body>
+</html>
